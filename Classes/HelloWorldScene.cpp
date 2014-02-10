@@ -1,4 +1,5 @@
 #include "HelloWorldScene.h"
+#include "platform/CCFileUtils.h"
 
 USING_NS_CC;
 
@@ -72,9 +73,25 @@ bool HelloWorld::init()
     // add the sprite as a child to this layer
     this->addChild(sprite, 0);
     
+    std::string fullPath = FileUtils::getInstance()->fullPathForFilename("Hero.ExportJson");
+    cocostudio::ArmatureDataManager::getInstance()->addArmatureFileInfoAsync(fullPath, this, schedule_selector(HelloWorld::onLoadedComplete));
     return true;
 }
 
+void HelloWorld::onLoadedComplete(float percent)
+{
+    if (percent >= 1)
+    {
+        CCLOG("%s", "loadComplete");
+        Size visibleSize = Director::getInstance()->getVisibleSize();
+        cocostudio::Armature * arm = cocostudio::Armature::create("Hero");
+        arm->setPosition(Point(visibleSize.width * 0.5, visibleSize.height * .5));
+        arm->setTag(1);
+        addChild(arm);
+        //arm->getAnimation()->play("loading");
+        //loading, run, attack, smitten, death
+    }
+}
 
 void HelloWorld::menuCloseCallback(Object* pSender)
 {
