@@ -3,3 +3,5 @@ cocos2d/
 #win32 system platform when vs open the *.opensdf cant be commit
 *.opensdf
 *.sdf
+
+proj.win32/
