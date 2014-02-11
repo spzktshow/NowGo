@@ -3,6 +3,7 @@
 
 #include "cocos2d.h"
 #include "cocostudio/CCArmature.h"
+#include "CCEventKeyboard.h"
 
 class HelloWorld : public cocos2d::Layer
 {
@@ -20,6 +21,9 @@ public:
     CREATE_FUNC(HelloWorld);
     
     void onLoadedComplete(float percent);
+
+	void onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event* event);
+	void onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event* event);
 };
 
 #endif // __HELLOWORLD_SCENE_H__

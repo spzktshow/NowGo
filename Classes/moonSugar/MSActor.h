@@ -12,37 +12,69 @@
 #include "moonSugar.h"
 #include "cocos2d.h"
 #include <string>
+#include "CCEventDispatcher.h"
+
+//state
+#define STATE_IDLE				"stateIdle"
+
+#define STATE_NORMAL_ATTACK		"stateNormalAttack"
+
+#define STATE_BE_ATTACK			"stateBeAttack"
+
+#define STATE_RUN				"stateRun"
+
+#define STATE_DEAD				"stateDead"
+
+//behavior
+#define DIRECT_EVENT			"directEvent"
+#define CANCEL_DIRECT_EVENT		"cancelDirectEvent"
+#define NORMAL_ATTACK_EVENT		"normalAttackEvent"
+#define CANCEL_ATTACK_EVENT		"cancelAttackEvent"
+#define BE_ATTACK_EVENT			"beAttackEvent"
+#define CANCEL_BE_ATTACK_EVENT	"cancelBeAttackEvent"
+#define DEAD_EVENT				"deadEvent"
+
+
+//event
+#define ACTOR_EVENT_STATE_CHANGED			"actorEventStateChanged"
 
 NS_MS_BEGIN
 
-class StateEnum
+class BehaviorEvent
 {
 public:
-    static const std::string STATE_IDLE;
-    static const std::string STATE_NORMAL_ATTACK;
-    static const std::string STATE_BE_ATTACK;
-    static const std::string STATE_RUN;
-    static const std::string STATE_DEAD;
+	std::string eventType;
+
+	BehaviorEvent(std::string behaviorEventType);
+
+	~BehaviorEvent();
 };
 
-class BehavierEventEnum
+class StateContext
 {
 public:
-    static const std::string DIRECT_EVENT;
-    static const std::string CANCEL_DIRECT_EVENT;
-    static const std::string NORMAL_ATTACK_EVENT;
-    static const std::string CANCEL_ATTACK_EVENT;
-    static const std::string BE_ATTACK_EVENT;
-    static const std::string CANCEL_BE_ATTACK_EVENT;
-    static const std::string DEAD_EVENT;
+	std::string currentState;
 };
 
 class Actor : public cocos2d::Object
 {
 public:
-    std::string currentState;
-    
-    
+    StateContext * stateContext;
+	//listenerDispatcher
+	cocos2d::EventDispatcher * dispatcher;
+	Actor();
+	~Actor();
+
+    void executeEvent(moonsugar::BehaviorEvent * behaviorEvent);
+protected:
+	void executeDirectEvent(moonsugar::BehaviorEvent * behaviorEvent);
+	void executeCancelDirectEvent(moonsugar::BehaviorEvent * behaviorEvent);
+	void executeNormalAttackEvent(moonsugar::BehaviorEvent * behaviorEvent);
+	void executeCancelAttackEvent(moonsugar::BehaviorEvent * behaviorEvent);
+	void executeNormalBeAttackEvent(moonsugar::BehaviorEvent * behaviorEvent);
+	void executeCancelNormalBeAttackEvent(moonsugar::BehaviorEvent * behaviorEvent);
+
+	void dispatcherStateChangeEvent();
 };
 
 NS_MS_END

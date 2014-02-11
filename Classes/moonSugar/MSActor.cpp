@@ -7,19 +7,105 @@
 //
 
 #include "MSActor.h"
+#include "CCEventCustom.h"
+#include "CCDirector.h"
 
-//state enum
-const std::string moonsugar::StateEnum::STATE_IDLE = "stateIdle";
-const std::string moonsugar::StateEnum::STATE_NORMAL_ATTACK = "stateNormalAttack";
-const std::string moonsugar::StateEnum::STATE_BE_ATTACK = "stateBeAttack";
-const std::string moonsugar::StateEnum::STATE_RUN = "stateRun";
-const std::string moonsugar::StateEnum::STATE_DEAD = "stateDead";
+NS_MS_BEGIN
+//BehaviorEvent
+BehaviorEvent::BehaviorEvent(std::string behaviorEventType)
+{
+	eventType = behaviorEventType;
+}
 
-//behavier event enum
-const std::string moonsugar::BehavierEventEnum::DIRECT_EVENT = "directEvent";
-const std::string moonsugar::BehavierEventEnum::CANCEL_DIRECT_EVENT = "cancelDirectEvent";
-const std::string moonsugar::BehavierEventEnum::NORMAL_ATTACK_EVENT = "normalAttackEvent";
-const std::string moonsugar::BehavierEventEnum::CANCEL_ATTACK_EVENT = "cancelAttackEvent";
-const std::string moonsugar::BehavierEventEnum::BE_ATTACK_EVENT = "beAttackEvent";
-const std::string moonsugar::BehavierEventEnum::CANCEL_BE_ATTACK_EVENT = "cancelBeAttackEvent";
-const std::string moonsugar::BehavierEventEnum::DEAD_EVENT = "deadEvent";
+BehaviorEvent::~BehaviorEvent(){}
+
+//Actor
+Actor::Actor()
+{
+	dispatcher = cocos2d::Director::getInstance()->getEventDispatcher();
+
+	stateContext = new StateContext();
+	stateContext->currentState = STATE_IDLE;
+}
+
+Actor::~Actor()
+{
+	dispatcher->removeAllEventListeners();
+	delete stateContext;
+	delete dispatcher;
+}
+
+void Actor::executeEvent(moonsugar::BehaviorEvent * behaviorEvent)
+{
+	if (behaviorEvent->eventType == DIRECT_EVENT)
+	{
+		executeDirectEvent(behaviorEvent);
+	}
+	else if (behaviorEvent->eventType == CANCEL_DIRECT_EVENT)
+	{
+		executeCancelDirectEvent(behaviorEvent);
+	}
+	else if (behaviorEvent->eventType == NORMAL_ATTACK_EVENT)
+	{
+		executeNormalAttackEvent(behaviorEvent);
+	}
+	else if (behaviorEvent->eventType == CANCEL_ATTACK_EVENT)
+	{
+		executeCancelAttackEvent(behaviorEvent);
+	}
+	else if (behaviorEvent->eventType == BE_ATTACK_EVENT)
+	{
+		executeNormalBeAttackEvent(behaviorEvent);
+	}
+	else if (behaviorEvent->eventType == CANCEL_BE_ATTACK_EVENT)
+	{
+		executeCancelNormalBeAttackEvent(behaviorEvent);
+	}
+}
+
+void Actor::dispatcherStateChangeEvent()
+{
+	cocos2d::EventCustom event(ACTOR_EVENT_STATE_CHANGED);
+	dispatcher->dispatchEvent(&event);
+}
+
+void Actor::executeDirectEvent(moonsugar::BehaviorEvent * behaviorEvent)
+{
+	if (stateContext->currentState == STATE_IDLE)
+	{
+		stateContext->currentState = STATE_RUN;
+
+		dispatcherStateChangeEvent();
+	}
+}
+
+void Actor::executeCancelDirectEvent(moonsugar::BehaviorEvent * behaviorEvent)
+{
+	if (stateContext->currentState == STATE_RUN)
+	{
+		stateContext->currentState = STATE_IDLE;
+
+		dispatcherStateChangeEvent();
+	}
+}
+
+void Actor::executeNormalAttackEvent(moonsugar::BehaviorEvent * behaviorEvent)
+{
+
+}
+
+void Actor::executeCancelAttackEvent(moonsugar::BehaviorEvent * behaviorEvent)
+{
+
+}
+
+void Actor::executeNormalBeAttackEvent(moonsugar::BehaviorEvent * behaviorEvent)
+{
+
+}
+
+void Actor::executeCancelNormalBeAttackEvent(moonsugar::BehaviorEvent * behaviorEvent)
+{
+
+}
+NS_MS_END

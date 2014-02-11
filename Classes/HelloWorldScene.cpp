@@ -1,5 +1,7 @@
 #include "HelloWorldScene.h"
 #include "platform/CCFileUtils.h"
+#include "moonSugar/MSActor.h"
+#include "moonSugar/TypeConver.h"
 
 USING_NS_CC;
 
@@ -72,10 +74,27 @@ bool HelloWorld::init()
 
     // add the sprite as a child to this layer
     this->addChild(sprite, 0);
-    
+
+	auto listener = EventListenerKeyboard::create();
+	listener->onKeyPressed = CC_CALLBACK_2(HelloWorld::onKeyPressed, this);
+	listener->onKeyReleased = CC_CALLBACK_2(HelloWorld::onKeyReleased, this);
+
+	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
+
     std::string fullPath = FileUtils::getInstance()->fullPathForFilename("Hero.ExportJson");
-    cocostudio::ArmatureDataManager::getInstance()->addArmatureFileInfoAsync(fullPath, this, schedule_selector(HelloWorld::onLoadedComplete));
+	log("%s", STATE_IDLE);
+    //cocostudio::ArmatureDataManager::getInstance()->addArmatureFileInfoAsync(fullPath, this, schedule_selector(HelloWorld::onLoadedComplete));
     return true;
+}
+
+void HelloWorld::onKeyReleased(EventKeyboard::KeyCode keyCode, Event* event)
+{
+	log("Released key code %d", keyCode);
+}
+
+void HelloWorld::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event)
+{
+	log("Key with key code %d pressed", keyCode);
 }
 
 void HelloWorld::onLoadedComplete(float percent)
