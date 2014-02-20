@@ -61,6 +61,8 @@ void Actor::executeEvent(moonsugar::BehaviorEvent * behaviorEvent)
 	{
 		executeCancelNormalBeAttackEvent(behaviorEvent);
 	}
+    
+    delete behaviorEvent;
 }
 
 void Actor::dispatcherStateChangeEvent()
@@ -74,8 +76,20 @@ void Actor::executeDirectEvent(moonsugar::BehaviorEvent * behaviorEvent)
 	if (stateContext->currentState == STATE_IDLE)
 	{
 		stateContext->currentState = STATE_RUN;
+        
+        entry->getAnimation()->play(STATE_RUN);
+        
+        moonsugar::BehaviorDirectEvent *behaviorDirectEvent = static_cast<moonsugar::BehaviorDirectEvent*>(behaviorEvent);
 
-		dispatcherStateChangeEvent();
+        if (behaviorDirectEvent->directType == DIRECT_TYPE_LEFT)
+        {
+            entry->setScaleX(-1);
+        }
+        else
+        {
+            entry->setScaleX(1);
+        }
+		//dispatcherStateChangeEvent();
 	}
 }
 
@@ -84,14 +98,21 @@ void Actor::executeCancelDirectEvent(moonsugar::BehaviorEvent * behaviorEvent)
 	if (stateContext->currentState == STATE_RUN)
 	{
 		stateContext->currentState = STATE_IDLE;
+        
+        entry->getAnimation()->play(STATE_IDLE);
 
-		dispatcherStateChangeEvent();
+		//dispatcherStateChangeEvent();
 	}
 }
 
 void Actor::executeNormalAttackEvent(moonsugar::BehaviorEvent * behaviorEvent)
 {
-
+    if (stateContext ->currentState == STATE_RUN || stateContext->currentState == STATE_IDLE)
+    {
+        stateContext->currentState = STATE_NORMAL_ATTACK;
+        
+        entry->getAnimation()->play(STATE_NORMAL_ATTACK);
+    }
 }
 
 void Actor::executeCancelAttackEvent(moonsugar::BehaviorEvent * behaviorEvent)

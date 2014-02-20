@@ -4,6 +4,7 @@
 #include "cocos2d.h"
 #include "cocostudio/CCArmature.h"
 #include "CCEventKeyboard.h"
+#include "MSActor.h"
 
 class HelloWorld : public cocos2d::Layer
 {
@@ -24,6 +25,8 @@ public:
 
 	void onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event* event);
 	void onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event* event);
+    
+    moonsugar::Actor *actor;
 };
 
 #endif // __HELLOWORLD_SCENE_H__

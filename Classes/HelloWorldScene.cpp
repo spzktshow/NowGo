@@ -57,7 +57,7 @@ bool HelloWorld::init()
     // add a label shows "Hello World"
     // create and initialize a label
     
-    auto label = LabelTTF::create("Hello World", "Arial", 24);
+    auto label = LabelTTF::create("Demo", "Arial", 24);
     
     // position the label on the center of the screen
     label->setPosition(Point(origin.x + visibleSize.width/2,
@@ -73,7 +73,8 @@ bool HelloWorld::init()
     sprite->setPosition(Point(visibleSize.width/2 + origin.x, visibleSize.height/2 + origin.y));
 
     // add the sprite as a child to this layer
-    this->addChild(sprite, 0);
+    //this->addChild(sprite, 0);
+    //sprite->setScaleX(-1);
 
 	auto listener = EventListenerKeyboard::create();
 	listener->onKeyPressed = CC_CALLBACK_2(HelloWorld::onKeyPressed, this);
@@ -82,19 +83,55 @@ bool HelloWorld::init()
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
 
     std::string fullPath = FileUtils::getInstance()->fullPathForFilename("Hero.ExportJson");
-	log("%s", STATE_IDLE);
-    //cocostudio::ArmatureDataManager::getInstance()->addArmatureFileInfoAsync(fullPath, this, schedule_selector(HelloWorld::onLoadedComplete));
+    cocostudio::ArmatureDataManager::getInstance()->addArmatureFileInfoAsync(fullPath, this, schedule_selector(HelloWorld::onLoadedComplete));
     return true;
 }
 
 void HelloWorld::onKeyReleased(EventKeyboard::KeyCode keyCode, Event* event)
 {
 	log("Released key code %d", keyCode);
+    if ((int)keyCode == 100 || (int)keyCode == 97)
+    {
+        //cancel direct
+        log("cancel direct");
+        moonsugar::BehaviorCancelDirectEvent * cancelDirect = new moonsugar::BehaviorCancelDirectEvent(CANCEL_DIRECT_EVENT);
+        actor->executeEvent(cancelDirect);
+        cancelDirect = nullptr;
+    }
 }
 
 void HelloWorld::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event)
 {
 	log("Key with key code %d pressed", keyCode);
+    if ((int)keyCode == 100)
+    {
+        //direct right
+        log("direct right");
+        moonsugar::BehaviorDirectEvent * directRight = new moonsugar::BehaviorDirectEvent(DIRECT_EVENT);
+        directRight->directType = DIRECT_TYPE_RIGHT;
+        actor->executeEvent(directRight);
+        directRight = nullptr;
+    }
+    else if ((int)keyCode == 97)
+    {
+        //direct left
+        log("direct left");
+        moonsugar::BehaviorDirectEvent * directLeft = new moonsugar::BehaviorDirectEvent(DIRECT_EVENT);
+        directLeft->directType = DIRECT_TYPE_LEFT;
+        actor->executeEvent(directLeft);
+        directLeft = nullptr;
+    }
+    else if ((int)keyCode == 106)
+    {
+        log("normal attack");
+        moonsugar::BehaviorNormalAttackEvent *normalAttack = new moonsugar::BehaviorNormalAttackEvent(NORMAL_ATTACK_EVENT);
+        actor->executeEvent(normalAttack);
+        normalAttack = nullptr;
+    }
+    else if ((int)keyCode == 32)
+    {
+        
+    }
 }
 
 void HelloWorld::onLoadedComplete(float percent)
@@ -107,8 +144,11 @@ void HelloWorld::onLoadedComplete(float percent)
         arm->setPosition(Point(visibleSize.width * 0.5, visibleSize.height * .5));
         arm->setTag(1);
         addChild(arm);
-        //arm->getAnimation()->play("loading");
+        arm->getAnimation()->play("loading");
         //loading, run, attack, smitten, death
+        
+        actor = new moonsugar::Actor();
+        actor->entry = arm;
     }
 }
 

@@ -13,17 +13,18 @@
 #include "cocos2d.h"
 #include <string>
 #include "CCEventDispatcher.h"
+#include "cocostudio/CCArmature.h"
 
 //state
-#define STATE_IDLE				"stateIdle"
+#define STATE_IDLE				"loading"
 
-#define STATE_NORMAL_ATTACK		"stateNormalAttack"
+#define STATE_NORMAL_ATTACK		"attack"
 
-#define STATE_BE_ATTACK			"stateBeAttack"
+#define STATE_BE_ATTACK			"smitten"
 
-#define STATE_RUN				"stateRun"
+#define STATE_RUN				"run"
 
-#define STATE_DEAD				"stateDead"
+#define STATE_DEAD				"death"
 
 //behavior
 #define DIRECT_EVENT			"directEvent"
@@ -39,7 +40,7 @@
 #define ACTOR_EVENT_STATE_CHANGED			"actorEventStateChanged"
 
 NS_MS_BEGIN
-
+//行为事件
 class BehaviorEvent
 {
 public:
@@ -48,6 +49,33 @@ public:
 	BehaviorEvent(std::string behaviorEventType);
 
 	~BehaviorEvent();
+};
+
+//direct type
+#define DIRECT_TYPE_LEFT "left"
+#define DIRECT_TYPE_RIGHT "right"
+
+class BehaviorDirectEvent : public BehaviorEvent
+{
+public:
+    BehaviorDirectEvent(std::string behaviorEventType):BehaviorEvent(behaviorEventType){};
+    ~BehaviorDirectEvent();
+    
+    std::string directType;
+};
+
+class BehaviorCancelDirectEvent : public BehaviorEvent
+{
+public:
+    BehaviorCancelDirectEvent(std::string behaviorEventType):BehaviorEvent(behaviorEventType){};
+    ~BehaviorCancelDirectEvent();
+};
+
+class BehaviorNormalAttackEvent : public BehaviorEvent
+{
+public:
+    BehaviorNormalAttackEvent(std::string behaviorEventType):BehaviorEvent(behaviorEventType){};
+    ~BehaviorNormalAttackEvent();
 };
 
 class StateContext
@@ -64,6 +92,8 @@ public:
 	cocos2d::EventDispatcher * dispatcher;
 	Actor();
 	~Actor();
+    //实体
+    cocostudio::Armature *entry;
 
     void executeEvent(moonsugar::BehaviorEvent * behaviorEvent);
 protected:
