@@ -2,6 +2,7 @@
 #include "platform/CCFileUtils.h"
 #include "moonSugar/MSActor.h"
 #include "moonSugar/TypeConver.h"
+#include "CCActionInterval.h"
 
 USING_NS_CC;
 
@@ -130,7 +131,9 @@ void HelloWorld::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event)
     }
     else if ((int)keyCode == 32)
     {
-        
+        moonsugar::BehaviorJumpEvent *jump = new moonsugar::BehaviorJumpEvent(JUMP_EVENT);
+        actor->executeEvent(jump);
+        jump = nullptr;
     }
 }
 
@@ -141,14 +144,16 @@ void HelloWorld::onLoadedComplete(float percent)
         CCLOG("%s", "loadComplete");
         Size visibleSize = Director::getInstance()->getVisibleSize();
         cocostudio::Armature * arm = cocostudio::Armature::create("Hero");
-        arm->setPosition(Point(visibleSize.width * 0.5, visibleSize.height * .5));
+        cocos2d::Point *postionP = new cocos2d::Point(visibleSize.width * 0.5, visibleSize.height * .5);
+        arm->setPosition(*postionP);
         arm->setTag(1);
         addChild(arm);
         arm->getAnimation()->play("loading");
         //loading, run, attack, smitten, death
-        
+//        cocos2d::Action * action = cocos2d::MoveTo::create(0.2f, cocos2d::Point(visibleSize.width * 0.5, visibleSize.height * .5 + 100));
         actor = new moonsugar::Actor();
         actor->entry = arm;
+        actor->position = postionP;
     }
 }
 

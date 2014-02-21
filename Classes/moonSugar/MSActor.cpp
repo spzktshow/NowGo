@@ -61,8 +61,31 @@ void Actor::executeEvent(moonsugar::BehaviorEvent * behaviorEvent)
 	{
 		executeCancelNormalBeAttackEvent(behaviorEvent);
 	}
-    
+    else if (behaviorEvent->eventType == JUMP_EVENT)
+    {
+        executeJumpEvent(behaviorEvent);
+    }
+    else if (behaviorEvent->eventType == CANCEL_JUMP_EVENT)
+    {
+        executeCancelJumpEvent(behaviorEvent);
+    }
     delete behaviorEvent;
+}
+
+void Actor::jump()
+{
+    cocos2d::Action * action = cocos2d::MoveTo::create(0.2f, cocos2d::Point(position->x, position->y + 100));
+    cocos2d::Action * back = cocos2d::MoveTo::create(0.2f, cocos2d::Point(position->x, position->y));
+    cocos2d::CallFunc * callback = cocos2d::CallFunc::create(CC_CALLBACK_0(Actor::onJumpComplete, this));
+    cocos2d::FiniteTimeAction *sq = cocos2d::Sequence::create(static_cast<cocos2d::FiniteTimeAction*>(action), static_cast<cocos2d::FiniteTimeAction*>(back), callback, NULL);
+    entry->runAction(sq);
+}
+
+void Actor::onJumpComplete()
+{
+    moonsugar::BehaviorCancelJumpEvent * cancelJump = new moonsugar::BehaviorCancelJumpEvent(CANCEL_JUMP_EVENT);
+    executeEvent(cancelJump);
+    cancelJump = nullptr;
 }
 
 void Actor::dispatcherStateChangeEvent()
@@ -111,16 +134,21 @@ void Actor::executeNormalAttackEvent(moonsugar::BehaviorEvent * behaviorEvent)
     {
         stateContext->currentState = STATE_NORMAL_ATTACK;
         
-//        entry->getAnimation()->setMovementEventCallFunc(std::function<void (cocostudio::Armature *, cocostudio::MovementEventType, const std::string &)> (Actor::onNormalAttackComplete));
+        std::function<void(cocostudio::Armature * armature, cocostudio::MovementEventType eventType, const std::string &str)> fun = CC_CALLBACK_3(Actor::onNormalAttackComplete, this);
+        entry->getAnimation()->setMovementEventCallFunc(fun);
         entry->getAnimation()->play(STATE_NORMAL_ATTACK);
     }
 }
 
 void Actor::onNormalAttackComplete(cocostudio::Armature *armature, cocostudio::MovementEventType eventType, const std::string &str)
 {
-    moonsugar::BehaviorCancelNormalAttackEvent * cancelNormalAttackEvent = new moonsugar::BehaviorCancelNormalAttackEvent(CANCEL_ATTACK_EVENT);
-    executeCancelAttackEvent(cancelNormalAttackEvent);
-    cancelNormalAttackEvent = nullptr;
+    if (eventType == 1)
+    {
+        entry->getAnimation()->setMovementEventCallFunc(NULL);
+        moonsugar::BehaviorCancelNormalAttackEvent * cancelNormalAttackEvent = new moonsugar::BehaviorCancelNormalAttackEvent(CANCEL_ATTACK_EVENT);
+        executeEvent(cancelNormalAttackEvent);
+        cancelNormalAttackEvent = nullptr;
+    }
 }
 
 void Actor::executeCancelAttackEvent(moonsugar::BehaviorEvent * behaviorEvent)
@@ -141,5 +169,25 @@ void Actor::executeNormalBeAttackEvent(moonsugar::BehaviorEvent * behaviorEvent)
 void Actor::executeCancelNormalBeAttackEvent(moonsugar::BehaviorEvent * behaviorEvent)
 {
 
+}
+
+void Actor::executeJumpEvent(moonsugar::BehaviorEvent *behaviorEvent)
+{
+    if (stateContext->currentState == STATE_IDLE || stateContext->currentState == STATE_RUN)
+    {
+        stateContext->currentState = STATE_JUMP;
+        
+        jump();
+    }
+}
+
+void Actor::executeCancelJumpEvent(moonsugar::BehaviorEvent *behaviorEvent)
+{
+    if (stateContext->currentState == STATE_JUMP)
+    {
+        stateContext->currentState = STATE_IDLE;
+        
+        entry->getAnimation()->play(STATE_IDLE);
+    }
 }
 NS_MS_END

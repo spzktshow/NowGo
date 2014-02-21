@@ -27,6 +27,8 @@
 
 #define STATE_DEAD				"death"
 
+#define STATE_JUMP              "jump"
+
 //behavior
 #define DIRECT_EVENT			"directEvent"
 #define CANCEL_DIRECT_EVENT		"cancelDirectEvent"
@@ -35,6 +37,8 @@
 #define BE_ATTACK_EVENT			"beAttackEvent"
 #define CANCEL_BE_ATTACK_EVENT	"cancelBeAttackEvent"
 #define DEAD_EVENT				"deadEvent"
+#define JUMP_EVENT              "jumpEvent"
+#define CANCEL_JUMP_EVENT       "cancelJumpEvent"
 
 
 //event
@@ -86,6 +90,20 @@ public:
     ~BehaviorCancelNormalAttackEvent();
 };
 
+class BehaviorJumpEvent : public BehaviorEvent
+{
+public:
+    BehaviorJumpEvent(std::string behaviorEventType):BehaviorEvent(behaviorEventType){};
+    ~BehaviorJumpEvent();
+};
+
+class BehaviorCancelJumpEvent : public BehaviorEvent
+{
+public:
+    BehaviorCancelJumpEvent(std::string behaviorEventType):BehaviorEvent(behaviorEventType){};
+    ~BehaviorCancelJumpEvent();
+};
+
 class StateContext
 {
 public:
@@ -102,6 +120,8 @@ public:
 	~Actor();
     //实体
     cocostudio::Armature *entry;
+    
+    cocos2d::Point *position;
 
     void executeEvent(moonsugar::BehaviorEvent * behaviorEvent);
 protected:
@@ -111,10 +131,15 @@ protected:
 	void executeCancelAttackEvent(moonsugar::BehaviorEvent * behaviorEvent);
 	void executeNormalBeAttackEvent(moonsugar::BehaviorEvent * behaviorEvent);
 	void executeCancelNormalBeAttackEvent(moonsugar::BehaviorEvent * behaviorEvent);
+    void executeJumpEvent(moonsugar::BehaviorEvent *behaviorEvent);
+    void executeCancelJumpEvent(moonsugar::BehaviorEvent *behaviorEvent);
 
 	void dispatcherStateChangeEvent();
     
     void onNormalAttackComplete(cocostudio::Armature *armature, cocostudio::MovementEventType eventType, const std::string& str);
+    
+    void jump();
+    void onJumpComplete();
 };
 
 NS_MS_END
