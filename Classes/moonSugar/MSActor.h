@@ -14,6 +14,7 @@
 #include <string>
 #include "CCEventDispatcher.h"
 #include "cocostudio/CCArmature.h"
+#include "cocostudio/CCArmatureAnimation.h"
 
 //state
 #define STATE_IDLE				"loading"
@@ -78,6 +79,13 @@ public:
     ~BehaviorNormalAttackEvent();
 };
 
+class BehaviorCancelNormalAttackEvent : public BehaviorEvent
+{
+public:
+    BehaviorCancelNormalAttackEvent(std::string behaviorEventType):BehaviorEvent(behaviorEventType){};
+    ~BehaviorCancelNormalAttackEvent();
+};
+
 class StateContext
 {
 public:
@@ -105,6 +113,8 @@ protected:
 	void executeCancelNormalBeAttackEvent(moonsugar::BehaviorEvent * behaviorEvent);
 
 	void dispatcherStateChangeEvent();
+    
+    void onNormalAttackComplete(cocostudio::Armature *armature, cocostudio::MovementEventType eventType, const std::string& str);
 };
 
 NS_MS_END

@@ -111,13 +111,26 @@ void Actor::executeNormalAttackEvent(moonsugar::BehaviorEvent * behaviorEvent)
     {
         stateContext->currentState = STATE_NORMAL_ATTACK;
         
+//        entry->getAnimation()->setMovementEventCallFunc(std::function<void (cocostudio::Armature *, cocostudio::MovementEventType, const std::string &)> (Actor::onNormalAttackComplete));
         entry->getAnimation()->play(STATE_NORMAL_ATTACK);
     }
 }
 
+void Actor::onNormalAttackComplete(cocostudio::Armature *armature, cocostudio::MovementEventType eventType, const std::string &str)
+{
+    moonsugar::BehaviorCancelNormalAttackEvent * cancelNormalAttackEvent = new moonsugar::BehaviorCancelNormalAttackEvent(CANCEL_ATTACK_EVENT);
+    executeCancelAttackEvent(cancelNormalAttackEvent);
+    cancelNormalAttackEvent = nullptr;
+}
+
 void Actor::executeCancelAttackEvent(moonsugar::BehaviorEvent * behaviorEvent)
 {
-
+    if (stateContext->currentState == STATE_NORMAL_ATTACK)
+    {
+        stateContext->currentState = STATE_IDLE;
+        
+        entry->getAnimation()->play(STATE_IDLE);
+    }
 }
 
 void Actor::executeNormalBeAttackEvent(moonsugar::BehaviorEvent * behaviorEvent)
